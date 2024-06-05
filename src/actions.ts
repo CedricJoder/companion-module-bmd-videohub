@@ -131,7 +131,7 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 			}
 		},
 	}
-
+/*
 	actions['route_dyn'] = {
 		name: 'Route dynamic',
 		options: [
@@ -164,7 +164,7 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 			}
 		},
 	}
-
+*/
 	actions['route_routed'] = {
 		name: 'Route source routed to given destination',
 		options: [
