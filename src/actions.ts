@@ -155,7 +155,7 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 			let destNum: string = await self.parseVariablesInString(String(action.options.destination))
 			let sourceNum: string = await self.parseVariablesInString(String(action.options.source))
 			let destId = Number(destNum)-1
-			let sourceId = Number(sourceNum)-1)
+			let sourceId = Number(sourceNum)-1
 		
 			const output = state.getOutputById(Number(destId))
 			if (output) {
