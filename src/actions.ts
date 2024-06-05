@@ -337,7 +337,7 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 				useVariables: true
 			},
 		],
-		callback: (action) => {
+		callback: async function (action) {
 			let destNum: string = await self.parseVariablesInString(String(action.options.destination))
 			
 			state.selectedDestination = Number(destNum)-1
@@ -362,7 +362,7 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 				useVariables: true
 			},
 		],
-		callback: (action) => {
+		callback: async function (action) {
 			let sourceNum: string = await self.parseVariablesInString(String(action.options.source))
 			let sourceId = Number(sourceNum)-1
 			const output = state.getSelectedOutput()
