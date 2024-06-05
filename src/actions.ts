@@ -131,12 +131,13 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 			}
 		},
 	}
-/*
+
+
 	actions['route_dyn'] = {
 		name: 'Route dynamic',
 		options: [
 			{
-				type: 'textinput'
+				type: 'textinput',
 				label: 'Source',
 				id: 'source',
 				default: '',
@@ -151,20 +152,22 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 			},
 		],
 		callback: async function (action) {
-			let destId = await self.parseVariablesInString(action.options.destination);
-			let sourceId = await self.parseVariablesInString(action.options.source);
+			let destId: string = await self.parseVariablesInString(String(Number(action.options.destination)-1));
+			let sourceId: string = await self.parseVariablesInString(String(Number(action.options.source)-1));
 		
 			const output = state.getOutputById(Number(destId))
 			if (output) {
+				self.log('debug', String(output.index))
 				if (output.type === 'monitor') {
-					sendCommand('VIDEO MONITORING OUTPUT ROUTING:\n' + output.index + ' ' + action.options.source + '\n\n')
+					sendCommand('VIDEO MONITORING OUTPUT ROUTING:\n' + output.index + ' ' + sourceId + '\n\n')
 				} else {
-					sendCommand('VIDEO OUTPUT ROUTING:\n' + output.index + ' ' + action.options.source + '\n\n')
+					sendCommand('VIDEO OUTPUT ROUTING:\n' + output.index + ' ' + sourceId + '\n\n')
 				}
 			}
 		},
 	}
-*/
+
+
 	actions['route_routed'] = {
 		name: 'Route source routed to given destination',
 		options: [
@@ -274,6 +277,9 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 			self.setVariableValues(values)
 		},
 	}
+
+
+
 	actions['route_source'] = {
 		name: 'Route source to selected destination',
 		options: [
@@ -316,6 +322,34 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 			}
 		},
 	}
+
+
+	actions['select_destination_dyn'] = {
+		name: 'Select destination dynamic',
+		options: [
+			{
+				type: 'textinput',
+				label: 'Destination',
+				id: 'destination',
+				default: '',
+				useVariables: true
+			},
+		],
+		callback: (action) => {
+			state.selectedDestination = Number(action.options.destination)-1
+
+			self.checkFeedbacks('selected_destination', 'take_tally_source', 'selected_source')
+
+			const values: CompanionVariableValues = {}
+			updateSelectedDestinationVariables(state, values)
+			self.setVariableValues(values)
+		},
+	}
+
+
+
+
+
 
 	actions['take'] = {
 		name: 'Take',
