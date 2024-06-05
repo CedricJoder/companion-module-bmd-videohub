@@ -152,8 +152,10 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 			},
 		],
 		callback: async function (action) {
-			let destId: string = await self.parseVariablesInString(String(Number(action.options.destination)-1));
-			let sourceId: string = await self.parseVariablesInString(String(Number(action.options.source)-1));
+			let destNum: string = await self.parseVariablesInString(String(action.options.destination))
+			let sourceNum: string = await self.parseVariablesInString(String(action.options.source))
+			let destId = Number(destNum)-1
+			let sourceId = Number(sourceNum)-1)
 		
 			const output = state.getOutputById(Number(destId))
 			if (output) {
@@ -336,7 +338,9 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 			},
 		],
 		callback: (action) => {
-			state.selectedDestination = Number(action.options.destination)-1
+			let destNum: string = await self.parseVariablesInString(String(action.options.destination))
+			
+			state.selectedDestination = Number(destNum)-1
 
 			self.checkFeedbacks('selected_destination', 'take_tally_source', 'selected_source')
 
@@ -348,6 +352,50 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 
 
 
+	actions['route_source_dyn'] = {
+		name: 'Route source to selected destination, dynamic',
+		options: [
+			{	type: 'textinput',
+				label: 'Source',
+				id: 'source',
+				default: '',
+				useVariables: true
+			},
+		],
+		callback: (action) => {
+			let sourceNum: string = await self.parseVariablesInString(String(action.options.source))
+			let sourceId = Number(sourceNum)-1
+			const output = state.getSelectedOutput()
+			if (output) {
+				if (output.type === 'monitor') {
+					if (self.config.take) {
+						state.queuedOp = {
+							cmd: 'VIDEO MONITORING OUTPUT ROUTING:\n' + output.index + ' ' + sourceId + '\n\n',
+							dest: output.id,
+							src: sourceId
+						}
+
+						self.checkFeedbacks('take', 'take_tally_source', 'take_tally_dest', 'take_tally_route')
+					} else {
+						sendCommand('VIDEO MONITORING OUTPUT ROUTING:\n' + output.index + ' ' + sourceId + '\n\n')
+					}
+				} else {
+					if (self.config.take) {
+						state.queuedOp = {
+							cmd: 'VIDEO OUTPUT ROUTING:\n' + output.index + ' ' + sourceId + '\n\n',
+							dest: output.id,
+							src: sourceId,
+						}
+
+						self.checkFeedbacks('take', 'take_tally_source', 'take_tally_dest', 'take_tally_route')
+					} else {
+						sendCommand('VIDEO OUTPUT ROUTING:\n' + output.index + ' ' + sourceId + '\n\n')
+					}
+				}
+			}
+		},
+		
+	}
 
 
 
