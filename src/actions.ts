@@ -132,6 +132,39 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 		},
 	}
 
+	actions['route_dyn'] = {
+		name: 'Route dynamic',
+		options: [
+			{
+				type: 'textinput'
+				label: 'Source',
+				id: 'source',
+				default: '',
+				useVariables: true
+			},
+			{
+				type: 'textinput',
+				label: 'Destination',
+				id: 'destination',
+				default: '',
+				useVariables: true
+			},
+		],
+		callback: async function (action) {
+			let destId = await self.parseVariablesInString(action.options.destination);
+			let sourceId = await self.parseVariablesInString(action.options.source);
+		
+			const output = state.getOutputById(Number(destId))
+			if (output) {
+				if (output.type === 'monitor') {
+					sendCommand('VIDEO MONITORING OUTPUT ROUTING:\n' + output.index + ' ' + action.options.source + '\n\n')
+				} else {
+					sendCommand('VIDEO OUTPUT ROUTING:\n' + output.index + ' ' + action.options.source + '\n\n')
+				}
+			}
+		},
+	}
+
 	actions['route_routed'] = {
 		name: 'Route source routed to given destination',
 		options: [
