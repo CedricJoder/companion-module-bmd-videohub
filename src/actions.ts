@@ -4,7 +4,7 @@ import { getInputChoices } from './choices.js'
 import type { VideohubState } from './state.js'
 import type { InstanceBaseExt } from './types.js'
 import { updateSelectedDestinationVariables } from './variables.js'
-import { ArithmeticExpressionEvaluator } from './maths.js'
+import { ArithmeticExpressionEvaluator } from './ArithmeticExpressionEvaluator.js'
 
 
 

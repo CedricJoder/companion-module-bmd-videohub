@@ -1,13 +1,15 @@
 import { combineRgb, CompanionFeedbackDefinitions } from '@companion-module/base'
 import { getInputChoices } from './choices.js'
 import { VideohubState } from './state.js'
+import type { InstanceBaseExt } from './types.js'
+import { ArithmeticExpressionEvaluator } from './ArithmeticExpressionEvaluator.js'
 
 /**
  * Get the available feedbacks.
  *
  * !!! Utilized by bmd-multiview16 !!!
  */
-export function getFeedbacks(state: VideohubState): CompanionFeedbackDefinitions {
+export function getFeedbacks(state: VideohubState, self: InstanceBaseExt): CompanionFeedbackDefinitions {
 	const { inputChoices, outputChoices, serialChoices } = getInputChoices(state)
 
 	const feedbacks: CompanionFeedbackDefinitions = {}
@@ -90,9 +92,37 @@ export function getFeedbacks(state: VideohubState): CompanionFeedbackDefinitions
 			},
 		],
 		callback: (feedback) => {
+			self.log('debug', 'selected source : '+ state.selectedDestination)
 			return Number(feedback.options.output) == state.selectedDestination
 		},
 	}
+
+	feedbacks['selected_destination_dyn'] = {
+		type: 'boolean',
+		name: 'Change background color by selected destination, dynamic',
+		description: 'If the output specified is selected, change background color of the bank',
+		defaultStyle: {
+			color: combineRgb(0, 0, 0),
+			bgcolor: combineRgb(255, 255, 0),
+		},
+		options: [
+			{
+				type: 'textinput',
+				label: 'Output',
+				id: 'output',
+				default: '',
+				useVariables: {local: true}
+			},
+		],
+		callback: async function (feedback, context) {
+			let outputNum: string = await context.parseVariablesInString(String(feedback.options.output!))
+			let outputId = new ArithmeticExpressionEvaluator().evaluate(outputNum)-1
+			self.log('debug', 'selected destination : ' + state.selectedDestination + ' / checked output : '+ outputId)
+			return (Number(outputId) == state.selectedDestination)
+		},
+	}
+
+
 
 	feedbacks['selected_source'] = {
 		type: 'boolean',
