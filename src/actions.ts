@@ -4,6 +4,9 @@ import { getInputChoices } from './choices.js'
 import type { VideohubState } from './state.js'
 import type { InstanceBaseExt } from './types.js'
 import { updateSelectedDestinationVariables } from './variables.js'
+import { ArithmeticExpressionEvaluator } from './maths.js'
+
+
 
 /**
  * Get the available actions.
@@ -141,21 +144,21 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 				label: 'Source',
 				id: 'source',
 				default: '',
-				useVariables: true
+				useVariables: {local: true}
 			},
 			{
 				type: 'textinput',
 				label: 'Destination',
 				id: 'destination',
 				default: '',
-				useVariables: true
+				useVariables: {local: true}
 			},
 		],
-		callback: async function (action) {
-			let destNum: string = await self.parseVariablesInString(String(action.options.destination))
-			let sourceNum: string = await self.parseVariablesInString(String(action.options.source))
-			let destId = Number(destNum)-1
-			let sourceId = Number(sourceNum)-1
+		callback: async function (action, context) {
+			let destNum: string = await context.parseVariablesInString(String(action.options.destination))
+			let sourceNum: string = await context.parseVariablesInString(String(action.options.source))
+			let destId = new ArithmeticExpressionEvaluator().evaluate(destNum)-1
+			let sourceId = new ArithmeticExpressionEvaluator().evaluate(sourceNum)-1
 		
 			const output = state.getOutputById(Number(destId))
 			if (output) {
@@ -202,6 +205,41 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 		},
 	}
 
+
+	actions['route_routed_dyn'] = {
+		name: 'Route source routed to given destination, dynamic',
+		options: [
+			{
+				type: 'textinput',
+				label: 'Destination to take routed source from',
+				id: 'source_routed_to_destination',
+				default: '',
+				useVariables: {local: true}
+			},
+			{
+				type: 'textinput',
+				label: 'Destination',
+				id: 'destination',
+				default: '',
+				useVariables: {local: true}
+			},
+		],
+		callback: async function (action, context) {
+			let destNum: string = await context.parseVariablesInString(String(action.options.destination))
+			let sourceFromDestNum: string = await context.parseVariablesInString(String(action.options.source_routed_to_destination))
+			const thisOutput = state.getOutputById(new ArithmeticExpressionEvaluator().evaluate(destNum)-1)
+			const otherOutput = state.getOutputById(new ArithmeticExpressionEvaluator().evaluate(sourceFromDestNum)-1)
+
+			if (thisOutput && otherOutput) {
+				if (thisOutput.type === 'monitor') {
+					sendCommand('VIDEO MONITORING OUTPUT ROUTING:\n' + thisOutput.index + ' ' + otherOutput.route + '\n\n')
+				} else {
+					sendCommand('VIDEO OUTPUT ROUTING:\n' + thisOutput.index + ' ' + otherOutput.route + '\n\n')
+				}
+			}
+		},
+	}
+
 	actions['route_to_previous'] = {
 		name: 'Return to previous route',
 		options: [
@@ -215,6 +253,94 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 		],
 		callback: (action) => {
 			const output = state.getOutputById(Number(action.options.destination))
+
+			if (output) {
+				let fallbackpop = output.fallback.pop() // The current route (i.e what the hardware is actually set to)
+				// has already been pushed onto the stack at "updateRouting" so to
+				// get to the last route we have to first pop this one off.
+				fallbackpop = output.fallback.pop() // This now, is the route to fallback to.
+
+				if (fallbackpop !== undefined && fallbackpop >= 0) {
+					if (output.type === 'monitor') {
+						sendCommand('VIDEO MONITORING OUTPUT ROUTING:\n' + output.index + ' ' + fallbackpop + '\n\n')
+					} else {
+						sendCommand('VIDEO OUTPUT ROUTING:\n' + output.index + ' ' + fallbackpop + '\n\n')
+					}
+				}
+			}
+		},
+	}
+
+	if (serialChoices.length > 0) {
+		actions['route_serial'] = {
+			name: 'Route serial port',
+			options: [
+				{
+					type: 'dropdown',
+					label: 'Source',
+					id: 'source',
+					default: 0,
+					choices: serialChoices,
+				},
+				{
+					type: 'dropdown',
+					label: 'Destination',
+					id: 'destination',
+					default: '1',
+					choices: serialChoices,
+				},
+			],
+			callback: (action) => {
+				sendCommand('SERIAL PORT ROUTING:\n' + action.options.destination + ' ' + action.options.source + '\n\n')
+			},
+		}
+
+		actions['route_serial_dyn'] = {
+			name: 'Route serial port, dynamic',
+			options: [
+				{
+					type: 'textinput',
+					label: 'Source',
+					id: 'source',
+					default: '0',
+					useVariables: {local: true}
+				},
+				{
+					type: 'textinput',
+					label: 'Destination',
+					id: 'destination',
+					default: '1',
+					useVariables: {local: true}
+				},
+			],
+			callback: async function (action, context) {
+			let destNum: string = await context.parseVariablesInString(String(action.options.destination))
+			let sourceNum: string = await context.parseVariablesInString(String(action.options.source))
+			let destId = new ArithmeticExpressionEvaluator().evaluate(destNum)-1
+			let sourceId = new ArithmeticExpressionEvaluator().evaluate(sourceNum)-1
+		
+				sendCommand('SERIAL PORT ROUTING:\n' + destId + ' ' + sourceId + '\n\n')
+			},
+		}
+	}
+
+
+
+	actions['route_to_previous_dyn'] = {
+		name: 'Return to previous route, dynamic',
+		options: [
+			{
+				type: 'textinput',
+				label: 'Destination',
+				id: 'destination',
+				default: '',
+				useVariables: {local: true}
+			},
+		],
+		callback: async function (action, context) {
+			let destNum: string = await context.parseVariablesInString(String(action.options.destination))
+
+			const output = state.getOutputById(new ArithmeticExpressionEvaluator().evaluate(destNum)-1)
 
 			if (output) {
 				let fallbackpop = output.fallback.pop() // The current route (i.e what the hardware is actually set to)
@@ -334,13 +460,14 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 				label: 'Destination',
 				id: 'destination',
 				default: '',
-				useVariables: true
+				useVariables: {local: true}
 			},
 		],
-		callback: async function (action) {
-			let destNum: string = await self.parseVariablesInString(String(action.options.destination))
+		callback: async function (action, context) {
+			let destNum: string = await context.parseVariablesInString(String(action.options.destination))
+
+			state.selectedDestination = new ArithmeticExpressionEvaluator().evaluate(destNum)-1
 			
-			state.selectedDestination = Number(destNum)-1
 
 			self.checkFeedbacks('selected_destination', 'take_tally_source', 'selected_source')
 
@@ -359,12 +486,12 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 				label: 'Source',
 				id: 'source',
 				default: '',
-				useVariables: true
+				useVariables: {local: true}
 			},
 		],
-		callback: async function (action) {
-			let sourceNum: string = await self.parseVariablesInString(String(action.options.source))
-			let sourceId = Number(sourceNum)-1
+		callback: async function (action, context) {
+			let sourceNum: string = await context.parseVariablesInString(String(action.options.source))
+			let sourceId = new ArithmeticExpressionEvaluator().evaluate(sourceNum)-1
 			const output = state.getSelectedOutput()
 			if (output) {
 				if (output.type === 'monitor') {
@@ -522,3 +649,4 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 
 	return actions
 }
+
