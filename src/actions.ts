@@ -137,7 +137,7 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 
 
 	actions['route_dyn'] = {
-		name: 'Route dynamic',
+		name: 'Route (dynamic)',
 		options: [
 			{
 				type: 'textinput',
@@ -207,7 +207,7 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 
 
 	actions['route_routed_dyn'] = {
-		name: 'Route source routed to given destination, dynamic',
+		name: 'Route source routed to given destination (dynamic)',
 		options: [
 			{
 				type: 'textinput',
@@ -296,7 +296,7 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 		}
 
 		actions['route_serial_dyn'] = {
-			name: 'Route serial port, dynamic',
+			name: 'Route serial port (dynamic)',
 			options: [
 				{
 					type: 'textinput',
@@ -327,7 +327,7 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 
 
 	actions['route_to_previous_dyn'] = {
-		name: 'Return to previous route, dynamic',
+		name: 'Return to previous route (dynamic)',
 		options: [
 			{
 				type: 'textinput',
@@ -398,7 +398,7 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 		callback: (action) => {
 			state.selectedDestination = Number(action.options.destination)
 
-			self.checkFeedbacks('selected_destination', 'take_tally_source', 'selected_source')
+			self.checkFeedbacks('selected_destination', 'take_tally_source', 'selected_source', 'selected_destination_dyn', 'take_tally_source_dyn', 'selected_source_dyn')
 
 			const values: CompanionVariableValues = {}
 			updateSelectedDestinationVariables(state, values)
@@ -453,7 +453,7 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 
 
 	actions['select_destination_dyn'] = {
-		name: 'Select destination dynamic',
+		name: 'Select destination (dynamic)',
 		options: [
 			{
 				type: 'textinput',
@@ -469,7 +469,7 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 			state.selectedDestination = new ArithmeticExpressionEvaluator().evaluate(destNum)-1
 			
 
-			self.checkFeedbacks('selected_destination', 'take_tally_source', 'selected_source')
+			self.checkFeedbacks('selected_destination', 'take_tally_source', 'selected_source', 'selected_destination_dyn', 'take_tally_source_dyn', 'selected_source_dyn')
 
 			const values: CompanionVariableValues = {}
 			updateSelectedDestinationVariables(state, values)
@@ -480,7 +480,7 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 
 
 	actions['route_source_dyn'] = {
-		name: 'Route source to selected destination, dynamic',
+		name: 'Route source to selected destination (dynamic)',
 		options: [
 			{	type: 'textinput',
 				label: 'Source',
@@ -502,7 +502,7 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 							src: sourceId
 						}
 
-						self.checkFeedbacks('take', 'take_tally_source', 'take_tally_dest', 'take_tally_route')
+						self.checkFeedbacks('take', 'take_tally_source', 'take_tally_dest', 'take_tally_route', 'take_tally_source_dyn', 'take_tally_dest_dyn', 'take_tally_route_dyn')
 					} else {
 						sendCommand('VIDEO MONITORING OUTPUT ROUTING:\n' + output.index + ' ' + sourceId + '\n\n')
 					}
@@ -514,7 +514,7 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 							src: sourceId,
 						}
 
-						self.checkFeedbacks('take', 'take_tally_source', 'take_tally_dest', 'take_tally_route')
+						self.checkFeedbacks('take', 'take_tally_source', 'take_tally_dest', 'take_tally_route', 'take_tally_source_dyn', 'take_tally_dest_dyn', 'take_tally_route_dyn')
 					} else {
 						sendCommand('VIDEO OUTPUT ROUTING:\n' + output.index + ' ' + sourceId + '\n\n')
 					}
@@ -533,7 +533,7 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 			const op = state.queuedOp
 			state.queuedOp = undefined
 
-			self.checkFeedbacks('take', 'take_tally_source', 'take_tally_dest', 'take_tally_route')
+			self.checkFeedbacks('take', 'take_tally_source', 'take_tally_dest', 'take_tally_route', 'take_tally_source_dyn', 'take_tally_dest_dyn', 'take_tally_route_dyn')
 
 			if (op) sendCommand(op.cmd)
 		},
@@ -544,7 +544,7 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 		callback: () => {
 			state.queuedOp = undefined
 
-			self.checkFeedbacks('take', 'take_tally_source', 'take_tally_dest', 'take_tally_route')
+			self.checkFeedbacks('take', 'take_tally_source', 'take_tally_dest', 'take_tally_route', take_tally_source_dyn', 'take_tally_dest_dyn', 'take_tally_route_dyn')
 		},
 	}
 
