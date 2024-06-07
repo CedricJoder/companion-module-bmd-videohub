@@ -43,6 +43,43 @@ export function getFeedbacks(state: VideohubState, self: InstanceBaseExt): Compa
 		},
 	}
 
+
+	feedbacks['input_bg_dyn'] = {
+		type: 'boolean',
+		name: 'Change background color by destination (dynamic)',
+		description: 'If the input specified is in use by the output specified, change background color of the bank',
+		defaultStyle: {
+			color: combineRgb(0, 0, 0),
+			bgcolor: combineRgb(255, 255, 0),
+		},
+		options: [
+			{
+				type: 'textinput',
+				label: 'Output',
+				id: 'output',
+				default: '',
+				useVariables: {local: true}
+			},
+			{
+				type: 'textinput',
+				label: 'Input',
+				id: 'input',
+				default: '',
+				useVariables: {local: true}
+			},
+		],
+		callback: async function (feedback, context) {
+			let outputNum: string = await context.parseVariablesInString(String(feedback.options.output!))
+			let inputNum: string = await context.parseVariablesInString(String(feedback.options.input!))
+
+			let outputId = new ArithmeticExpressionEvaluator().evaluate(outputNum)-1
+			let inputId = new ArithmeticExpressionEvaluator().evaluate(inputNum)-1
+
+			return state.getOutputById(Number(outputId))?.route == Number(inputId)
+		},
+	}
+
+
 	if (serialChoices.length > 0) {
 		feedbacks['serial_bg'] = {
 			type: 'boolean',
