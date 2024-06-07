@@ -140,7 +140,7 @@ export function getFeedbacks(state: VideohubState, self: InstanceBaseExt): Compa
 
 				let outputId = new ArithmeticExpressionEvaluator().evaluate(outputNum)-1
 				let inputId = new ArithmeticExpressionEvaluator().evaluate(inputNum)-1
-				return state.getSerial(Number(ouputId))?.route == Number(inputId)
+				return state.getSerial(Number(outputId))?.route == Number(inputId)
 			},
 		}
 	}
