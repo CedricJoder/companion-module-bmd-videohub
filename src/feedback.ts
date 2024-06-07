@@ -170,7 +170,7 @@ export function getFeedbacks(state: VideohubState, self: InstanceBaseExt): Compa
 
 	feedbacks['selected_destination_dyn'] = {
 		type: 'boolean',
-		name: 'Change background color by selected destination, dynamic',
+		name: 'Change background color by selected destination (dynamic)',
 		description: 'If the output specified is selected, change background color of the bank',
 		defaultStyle: {
 			color: combineRgb(0, 0, 0),
@@ -324,6 +324,31 @@ export function getFeedbacks(state: VideohubState, self: InstanceBaseExt): Compa
 			return Number(feedback.options.output) == state.queuedOp?.dest
 		},
 	}
+
+	feedbacks['take_tally_dest_dyn'] = {
+		type: 'boolean',
+		name: 'Change background color if the selected destination is queued in take (dynamic)',
+		description: 'If the selected destination is queued for take, change background color of the bank',
+		defaultStyle: {
+			color: combineRgb(255, 255, 255),
+			bgcolor: combineRgb(255, 0, 0),
+		},
+		options: [
+			{
+				type: 'textinput',
+				label: 'Output',
+				id: 'output',
+				default: '',
+				useVariables: {local: true}
+			},
+		],
+		callback: async function (feedback, context) {
+			let outputNum: string = await context.parseVariablesInString(String(feedback.options.output!))
+			let outputId = new ArithmeticExpressionEvaluator().evaluate(outputNum)-1
+			return Number(outputId) == state.queuedOp?.dest
+		},
+	}
+
 
 	return feedbacks
 }
