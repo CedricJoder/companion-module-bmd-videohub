@@ -430,7 +430,7 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 							src: Number(action.options.source),
 						}
 
-						self.checkFeedbacks('take', 'take_tally_source', 'take_tally_dest', 'take_tally_route')
+						self.checkFeedbacks('take', 'take_tally_source', 'take_tally_dest', 'take_tally_route', 'take_tally_source_dyn', 'take_tally_dest_dyn', 'take_tally_route_dyn')
 					} else {
 						sendCommand('VIDEO MONITORING OUTPUT ROUTING:\n' + output.index + ' ' + action.options.source + '\n\n')
 					}
@@ -442,7 +442,7 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 							src: Number(action.options.source),
 						}
 
-						self.checkFeedbacks('take', 'take_tally_source', 'take_tally_dest', 'take_tally_route')
+						self.checkFeedbacks('take', 'take_tally_source', 'take_tally_dest', 'take_tally_route', 'take_tally_source_dyn', 'take_tally_dest_dyn', 'take_tally_route_dyn')
 					} else {
 						sendCommand('VIDEO OUTPUT ROUTING:\n' + output.index + ' ' + action.options.source + '\n\n')
 					}
