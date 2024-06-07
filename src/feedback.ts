@@ -2,7 +2,7 @@ import { combineRgb, CompanionFeedbackDefinitions } from '@companion-module/base
 import { getInputChoices } from './choices.js'
 import { VideohubState } from './state.js'
 import type { InstanceBaseExt } from './types.js'
-import { ArithmeticExpressionEvaluator } from './ArithmeticExpressionEvaluator.js'
+import simpleEval from 'simple-eval'
 
 /**
  * Get the available feedbacks.
@@ -72,10 +72,10 @@ export function getFeedbacks(state: VideohubState, self: InstanceBaseExt): Compa
 			let outputNum: string = await context.parseVariablesInString(String(feedback.options.output!))
 			let inputNum: string = await context.parseVariablesInString(String(feedback.options.input!))
 
-			let outputId = new ArithmeticExpressionEvaluator().evaluate(outputNum)-1
-			let inputId = new ArithmeticExpressionEvaluator().evaluate(inputNum)-1
+			let outputId = Number(simpleEval(outputNum))-1
+			let inputId = Number(simpleEval(inputNum))-1
 
-			return state.getOutputById(Number(outputId))?.route == Number(inputId)
+			return state.getOutputById(outputId)?.route == inputId
 		},
 	}
 
@@ -138,9 +138,9 @@ export function getFeedbacks(state: VideohubState, self: InstanceBaseExt): Compa
 				let outputNum: string = await context.parseVariablesInString(String(feedback.options.output!))
 				let inputNum: string = await context.parseVariablesInString(String(feedback.options.input!))
 
-				let outputId = new ArithmeticExpressionEvaluator().evaluate(outputNum)-1
-				let inputId = new ArithmeticExpressionEvaluator().evaluate(inputNum)-1
-				return state.getSerial(Number(outputId))?.route == Number(inputId)
+				let outputId = Number(simpleEval(outputNum))-1
+				let inputId = Number(simpleEval(inputNum))-1
+				return state.getSerial(outputId)?.route == inputId
 			},
 		}
 	}
@@ -187,9 +187,9 @@ export function getFeedbacks(state: VideohubState, self: InstanceBaseExt): Compa
 		],
 		callback: async function (feedback, context) {
 			let outputNum: string = await context.parseVariablesInString(String(feedback.options.output!))
-			let outputId = new ArithmeticExpressionEvaluator().evaluate(outputNum)-1
+			let outputId = Number(simpleEval(outputNum))-1
 			self.log('debug', 'selected destination : ' + state.selectedDestination + ' / checked output : '+ outputId)
-			return (Number(outputId) == state.selectedDestination)
+			return (outputId == state.selectedDestination)
 		},
 	}
 
@@ -236,8 +236,8 @@ export function getFeedbacks(state: VideohubState, self: InstanceBaseExt): Compa
 		],
 		callback: async function (feedback, context) {
 			let inputNum: string = await context.parseVariablesInString(String(feedback.options.input!))
-			let inputId = new ArithmeticExpressionEvaluator().evaluate(inputNum)-1
-			return state.getSelectedOutput()?.route == Number(inputId)
+			let inputId = Number(simpleEval(inputNum))-1
+			return state.getSelectedOutput()?.route == inputId
 		},
 	}
 
@@ -296,9 +296,9 @@ export function getFeedbacks(state: VideohubState, self: InstanceBaseExt): Compa
 		],
 		callback: async function (feedback, context) {
 			let inputNum: string = await context.parseVariablesInString(String(feedback.options.input!))
-			let inputId = new ArithmeticExpressionEvaluator().evaluate(inputNum)-1
+			let inputId = Number(simpleEval(inputNum))-1
 	
-			return Number(inputId) == state.queuedOp?.src && state.selectedDestination == state.queuedOp?.dest
+			return inputId == state.queuedOp?.src && state.selectedDestination == state.queuedOp?.dest
 		},
 	}
 
@@ -344,8 +344,8 @@ export function getFeedbacks(state: VideohubState, self: InstanceBaseExt): Compa
 		],
 		callback: async function (feedback, context) {
 			let outputNum: string = await context.parseVariablesInString(String(feedback.options.output!))
-			let outputId = new ArithmeticExpressionEvaluator().evaluate(outputNum)-1
-			return Number(outputId) == state.queuedOp?.dest
+			let outputId = Number(simpleEval(outputNum))-1
+			return outputId == state.queuedOp?.dest
 		},
 	}
 

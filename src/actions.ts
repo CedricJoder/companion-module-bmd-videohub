@@ -4,7 +4,7 @@ import { getInputChoices } from './choices.js'
 import type { VideohubState } from './state.js'
 import type { InstanceBaseExt } from './types.js'
 import { updateSelectedDestinationVariables } from './variables.js'
-import { ArithmeticExpressionEvaluator } from './ArithmeticExpressionEvaluator.js'
+import simpleEval from 'simple-eval'
 
 
 
@@ -157,10 +157,10 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 		callback: async function (action, context) {
 			let destNum: string = await context.parseVariablesInString(String(action.options.destination))
 			let sourceNum: string = await context.parseVariablesInString(String(action.options.source))
-			let destId = new ArithmeticExpressionEvaluator().evaluate(destNum)-1
-			let sourceId = new ArithmeticExpressionEvaluator().evaluate(sourceNum)-1
-		
-			const output = state.getOutputById(Number(destId))
+			
+			let destId = Number(simpleEval(destNum))-1
+			let sourceId = Number(simpleEval(sourceNum))-1
+			const output = state.getOutputById(destId)
 			if (output) {
 				self.log('debug', String(output.index))
 				if (output.type === 'monitor') {
@@ -227,8 +227,8 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 		callback: async function (action, context) {
 			let destNum: string = await context.parseVariablesInString(String(action.options.destination))
 			let sourceFromDestNum: string = await context.parseVariablesInString(String(action.options.source_routed_to_destination))
-			const thisOutput = state.getOutputById(new ArithmeticExpressionEvaluator().evaluate(destNum)-1)
-			const otherOutput = state.getOutputById(new ArithmeticExpressionEvaluator().evaluate(sourceFromDestNum)-1)
+			const thisOutput = state.getOutputById(Number(simpleEval(destNum))-1)
+			const otherOutput = state.getOutputById(Number(simpleEval(sourceFromDestNum))-1)
 
 			if (thisOutput && otherOutput) {
 				if (thisOutput.type === 'monitor') {
@@ -316,8 +316,8 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 			callback: async function (action, context) {
 			let destNum: string = await context.parseVariablesInString(String(action.options.destination))
 			let sourceNum: string = await context.parseVariablesInString(String(action.options.source))
-			let destId = new ArithmeticExpressionEvaluator().evaluate(destNum)-1
-			let sourceId = new ArithmeticExpressionEvaluator().evaluate(sourceNum)-1
+			let destId = Number(simpleEval(destNum))-1
+			let sourceId = Number(simpleEval(sourceNum))-1
 		
 				sendCommand('SERIAL PORT ROUTING:\n' + destId + ' ' + sourceId + '\n\n')
 			},
@@ -340,7 +340,7 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 		callback: async function (action, context) {
 			let destNum: string = await context.parseVariablesInString(String(action.options.destination))
 
-			const output = state.getOutputById(new ArithmeticExpressionEvaluator().evaluate(destNum)-1)
+			const output = state.getOutputById(Number(simpleEval(destNum))-1)
 
 			if (output) {
 				let fallbackpop = output.fallback.pop() // The current route (i.e what the hardware is actually set to)
@@ -466,7 +466,7 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 		callback: async function (action, context) {
 			let destNum: string = await context.parseVariablesInString(String(action.options.destination))
 
-			state.selectedDestination = new ArithmeticExpressionEvaluator().evaluate(destNum)-1
+			state.selectedDestination = Number(simpleEval(destNum))-1
 			
 
 			self.checkFeedbacks('selected_destination', 'take_tally_source', 'selected_source', 'selected_destination_dyn', 'take_tally_source_dyn', 'selected_source_dyn')
@@ -491,7 +491,7 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 		],
 		callback: async function (action, context) {
 			let sourceNum: string = await context.parseVariablesInString(String(action.options.source))
-			let sourceId = new ArithmeticExpressionEvaluator().evaluate(sourceNum)-1
+			let sourceId = Number(simpleEval(sourceNum))-1
 			const output = state.getSelectedOutput()
 			if (output) {
 				if (output.type === 'monitor') {
