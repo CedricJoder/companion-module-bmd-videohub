@@ -277,6 +277,32 @@ export function getFeedbacks(state: VideohubState, self: InstanceBaseExt): Compa
 		},
 	}
 
+	feedbacks['take_tally_source_dyn'] = {
+		type: 'boolean',
+		name: 'Change background color if the selected source is queued in take (dynamic)',
+		description: 'If the selected source is queued for take, change background color of the bank',
+		defaultStyle: {
+			color: combineRgb(255, 255, 255),
+			bgcolor: combineRgb(255, 0, 0),
+		},
+		options: [
+			{
+				type: 'textinput',
+				label: 'Input',
+				id: 'input',
+				default: '',
+				useVariables: {local: true}
+			},
+		],
+		callback: async function (feedback, context) {
+			let inputNum: string = await context.parseVariablesInString(String(feedback.options.input!))
+			let inputId = new ArithmeticExpressionEvaluator().evaluate(inputNum)-1
+	
+			return Number(inputId) == state.queuedOp?.src && state.selectedDestination == state.queuedOp?.dest
+		},
+	}
+
+
 	feedbacks['take_tally_dest'] = {
 		type: 'boolean',
 		name: 'Change background color if the selected destination is queued in take',
