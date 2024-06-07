@@ -72,6 +72,40 @@ export function getFeedbacks(state: VideohubState, self: InstanceBaseExt): Compa
 				return state.getSerial(Number(feedback.options.output))?.route == Number(feedback.options.input)
 			},
 		}
+
+		feedbacks['serial_bg_dyn'] = {
+			type: 'boolean',
+			name: 'Change background color by serial route (dynamic)',
+			description: 'If the input specified is in use by the output specified, change background color of the bank',
+			defaultStyle: {
+				color: combineRgb(0, 0, 0),
+				bgcolor: combineRgb(255, 255, 0),
+			},
+			options: [
+				{
+					type: 'textinput',
+					label: 'Output',
+					id: 'output',
+					default: '',
+					useVariables: {local: true}
+				},
+				{
+					type: 'textinput',
+					label: 'Input',
+					id: 'input',
+					default: '',
+					useVariables: {local: true}
+				},
+			],
+			callback: async function (feedback, context) {
+				let outputNum: string = await context.parseVariablesInString(String(feedback.options.output!))
+				let inputNum: string = await context.parseVariablesInString(String(feedback.options.input!))
+
+				let outputId = new ArithmeticExpressionEvaluator().evaluate(outputNum)-1
+				let inputId = new ArithmeticExpressionEvaluator().evaluate(inputNum)-1
+				return state.getSerial(Number(ouputId))?.route == Number(inputId)
+			},
+		}
 	}
 
 	feedbacks['selected_destination'] = {
@@ -143,6 +177,30 @@ export function getFeedbacks(state: VideohubState, self: InstanceBaseExt): Compa
 		],
 		callback: (feedback) => {
 			return state.getSelectedOutput()?.route == Number(feedback.options.input)
+		},
+	}
+
+	feedbacks['selected_source_dyn'] = {
+		type: 'boolean',
+		name: 'Change background color by route to selected destination (dynamic)',
+		description: 'If the input specified is in use by the selected output, change background color of the bank',
+		defaultStyle: {
+			color: combineRgb(0, 0, 0),
+			bgcolor: combineRgb(255, 255, 255),
+		},
+		options: [
+			{
+				type: 'textinput',
+				label: 'Input',
+				id: 'input',
+				default: '',
+				useVariables: {local: true}
+			},
+		],
+		callback: async function (feedback, context) {
+			let inputNum: string = await context.parseVariablesInString(String(feedback.options.input!))
+			let inputId = new ArithmeticExpressionEvaluator().evaluate(inputNum)-1
+			return state.getSelectedOutput()?.route == Number(inputId)
 		},
 	}
 
