@@ -398,7 +398,7 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 		callback: (action) => {
 			state.selectedDestination = Number(action.options.destination)
 
-			self.checkFeedbacks('selected_destination', 'take_tally_source', 'selected_source', 'selected_destination_dyn', 'take_tally_source_dyn', 'selected_source_dyn')
+			self.checkFeedbacks('selected_destination', 'take_tally_dest', 'selected_source', 'take_tally_source', 'selected_destination_dyn', 'take_tally_dest_dyn', 'selected_source_dyn', 'take_tally_source_dyn')
 
 			const values: CompanionVariableValues = {}
 			updateSelectedDestinationVariables(state, values)
@@ -469,7 +469,7 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 			state.selectedDestination = Number(simpleEval(destNum))-1
 			
 
-			self.checkFeedbacks('selected_destination', 'take_tally_source', 'selected_source', 'selected_destination_dyn', 'take_tally_source_dyn', 'selected_source_dyn')
+			self.checkFeedbacks('selected_destination', 'take_tally_dest', 'take_tally_source', 'selected_source', 'selected_destination_dyn', 'take_tally_dest_dyn', 'selected_source_dyn', 'take_tally_source_dyn')
 
 			const values: CompanionVariableValues = {}
 			updateSelectedDestinationVariables(state, values)
