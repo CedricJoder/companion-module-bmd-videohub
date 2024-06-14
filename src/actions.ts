@@ -397,10 +397,13 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 		],
 		callback: (action) => {
 			state.selectedDestination = Number(action.options.destination)
+			if (state.queuedOp) {
+				state.queuedOp.dest = state.selectedDestination;
+			}
 
 			self.checkFeedbacks('selected_destination', 'take_tally_dest', 'selected_source', 'take_tally_source', 'selected_destination_dyn', 'take_tally_dest_dyn', 'selected_source_dyn', 'take_tally_source_dyn')
 
-			const values: CompanionVariableValues = {}
+			let values: CompanionVariableValues = {}
 			updateSelectedDestinationVariables(state, values)
 			self.setVariableValues(values)
 		},
@@ -448,6 +451,9 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 					}
 				}
 			}
+			let values: CompanionVariableValues = {}
+			updateSelectedDestinationVariables(state, values)
+			self.setVariableValues(values)
 		},
 	}
 
@@ -467,11 +473,13 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 			let destNum: string = await context.parseVariablesInString(String(action.options.destination))
 
 			state.selectedDestination = Number(simpleEval(destNum))-1
-			
+			if (state.queuedOp) {
+				state.queuedOp.dest = state.selectedDestination;
+			}
 
 			self.checkFeedbacks('selected_destination', 'take_tally_dest', 'take_tally_source', 'selected_source', 'selected_destination_dyn', 'take_tally_dest_dyn', 'selected_source_dyn', 'take_tally_source_dyn')
 
-			const values: CompanionVariableValues = {}
+			let values: CompanionVariableValues = {}
 			updateSelectedDestinationVariables(state, values)
 			self.setVariableValues(values)
 		},
@@ -520,6 +528,9 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 					}
 				}
 			}
+			let values: CompanionVariableValues = {}
+			updateSelectedDestinationVariables(state, values)
+			self.setVariableValues(values)
 		},
 		
 	}
@@ -532,6 +543,10 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 		callback: () => {
 			const op = state.queuedOp
 			state.queuedOp = undefined
+			
+			let values: CompanionVariableValues = {}
+			updateSelectedDestinationVariables(state, values)
+			self.setVariableValues(values)
 
 			self.checkFeedbacks('take', 'take_tally_source', 'take_tally_dest', 'take_tally_route', 'take_tally_source_dyn', 'take_tally_dest_dyn', 'take_tally_route_dyn')
 
@@ -541,9 +556,13 @@ export function getActions(self: InstanceBaseExt, state: VideohubState): Compani
 	actions['clear'] = {
 		name: 'Clear',
 		options: [],
-		callback: () => {
+		callback: () => {self.log('debug', "559")
 			state.queuedOp = undefined
-
+self.log('debug', "561")
+			let values: CompanionVariableValues = {}
+			updateSelectedDestinationVariables(state, values)
+			self.setVariableValues(values)
+self.log('debug', "565")
 			self.checkFeedbacks('take', 'take_tally_source', 'take_tally_dest', 'take_tally_route', 'take_tally_source_dyn', 'take_tally_dest_dyn', 'take_tally_route_dyn')
 		},
 	}

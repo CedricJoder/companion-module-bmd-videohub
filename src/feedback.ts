@@ -188,7 +188,6 @@ export function getFeedbacks(state: VideohubState, self: InstanceBaseExt): Compa
 		callback: async function (feedback, context) {
 			let outputNum: string = await context.parseVariablesInString(String(feedback.options.output!))
 			let outputId = Number(simpleEval(outputNum))-1
-			self.log('debug', 'selected destination : ' + state.selectedDestination + ' / checked output : '+ outputId)
 			return (outputId == state.selectedDestination)
 		},
 	}
