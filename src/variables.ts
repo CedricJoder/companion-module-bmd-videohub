@@ -81,7 +81,7 @@ export function initVariables(self: InstanceBase<VideoHubConfig>, state: Videohu
 export function updateSelectedDestinationVariables(
 	state: VideohubState,
 	variableValues: CompanionVariableValues
-): 
+): void { 
 	const selectedOutput = state.getSelectedOutput()
 	const inputForSelectedOutput = selectedOutput ? state.getInput(selectedOutput.route) : undefined
 	const selectedQueuedSource = (state.queuedOp && (state.queuedOp.src !== undefined)) ? state.getInput(state.queuedOp.src) : undefined
